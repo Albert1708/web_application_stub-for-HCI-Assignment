@@ -1,0 +1,671 @@
+ <!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+.collapsible {
+  background-color: #fff;
+  color: gray;
+  text-shadow: white 0 1px 0;
+  overflow: visible;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 20px;
+  font: normal 17px Helvetica Neue Ultra Light, Helvetica Neue Interface M3, Helvetica;
+  
+
+}
+
+
+.active, .collapsible:hover {
+  background-color: white;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+</style>
+
+        <title>HCI-MCI-M/Assignment I: <!-- your name --></title>
+        <link rel="stylesheet" href="./themes/css/innsbruck.css" title="jQTouch">
+        <script src="./jqt/lib/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="./jqt/jqtouch.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="./prepareLocalStorage.js" type="text/javascript" charset="utf-8"></script>
+
+        <script type="text/javascript" charset="utf-8">
+
+          /* 
+            set DEBUG  true to always initalise local storage and
+            to see console messages; set it to false to use an
+            initalised local storage and suppress console messages
+          */
+          var DEBUG = true;
+          
+          // Init jQT
+          var jQT = new $.jQTouch({
+              icon: 'jqtouch.png',
+              icon4: 'jqtouch4.png',
+              addGlossToIcon: false,
+              startupScreen: 'jqt_startup.png',
+              statusBar: 'black-translucent',
+              themeSelectionSelector: '#jqt #themes ul',
+              preloadImages: []
+          });
+          
+          // Local Storage Prepartion
+          function supportsHtml5Storage() {
+            try {
+              return 'localStorage' in window && window['localStorage'] !== null;
+            } catch (e) {
+              return false;
+            }
+          }
+          
+          // Binding Local Callbacks
+          $(document).ready(function(e){
+            
+            // Configure console
+            if(!window.console) window.console = {};
+            if(!DEBUG){
+                var methods = ["log", "debug", "warn", "info"];
+                for(var i=0;i<methods.length;i++){
+                	console[methods[i]] = function(){};
+                }
+            }
+            
+            // Check for Local Storage
+            if (!supportsHtml5Storage()){
+              alert("Local Storage not supported");
+            }
+            else{
+              console.debug("Has HTML5 Local Storage Support")
+              prepareLocalStorage(DEBUG);
+            }
+            
+            // Orientation Callback Event
+            $('body').bind('turn', function(e, data){
+              alert('Orientation: ' + data.orientation);
+            });
+            
+            // Callback for Loading Contents of the Screens
+            $("#home").on("pageAnimationEnd", function(e, info){
+              console.debug('id: ' + this.id + ' and direction: ' + info.direction);
+              // Load data once
+              if (!$(this).data('loaded')) {
+                  home_loadExternalLinks();
+                  $(this).data('loaded', true);  
+                };  
+            });
+            home_loadExternalLinks() // for inital loading for first screen
+            faculty_loadExternalLinks() // for inital loading for faculty screen
+            studies_loadExternalLinks() // for initial loading for studies screen
+            ap_loadExternalLinks() // for initial loading for Application Prerequisites screen
+            howtoapply_loadExternalLinks() // for initial loading for How to Apply
+            ata_loadExternalLinks() // for initial loading for How to After the Application
+            md_loadExternalLinks() // for initial loading for How to Master's Degree
+            ex_loadExternalLinks() // for initial loading for How to Exchange student's
+            //.. do the same for the other sections
+          });
+          
+          // Scripts and Structures for Home
+          
+          // load links from local storage and append to section in #home
+          function home_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['home_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#homeExternalLinks").append(link);
+            });
+            $('#home').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #faculty
+          function faculty_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['faculty_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#facultyExternalLinks").append(link);
+            });
+            $('#faculty').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #studies
+          function studies_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['studies_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#studiesExternalLinks").append(link);
+            });
+            $('#studies').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #studies>undergraduate>application Prerequisites
+          function ap_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['ap_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#apExternalLinks").append(link);
+            });
+            $('#undergraduate').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #studies>undergraduate>how to apply
+          function howtoapply_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['howtoapply_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#howtoapplyExternalLinks").append(link);
+            });
+            $('#undergraduate').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #studies>undergraduate>how to apply
+          function ata_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['ata_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#ataExternalLinks").append(link);
+            });
+            $('#undergraduate').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #studies>Master's Degree
+          function md_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['md_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#mdExternalLinks").append(link);
+            });
+            $('#masterdegree').data('loaded', true);  
+          }
+          // load links from local storage and append to section in #studies>Exchange student's
+          function ex_loadExternalLinks(){
+            $.each(JSON.parse(localStorage['ex_externalLinks']), function() {
+              // build link
+              link = "<li class=\"forward\"><a href=\""+this.href+"\" target=\"_blank\">"+this.title+"</a></li>";
+              // append link
+              $("#exExternalLinks").append(link);
+            });
+            $('#erasmus').data('loaded', true);  
+          }
+  </script>
+</head>
+<body>
+  <!-- Home -->
+  <div id="home" class="current">
+    <div class="toolbar">
+      <h1>WIAI</h1>
+      <a class="button slideup" id="infoButton" href="#about">About</a>
+    </div>
+    <h2>Your University, Your Choice</h2>
+    <ul class="rounded">
+      <li class="arrow"><a href="#studies">Studies</a></li>
+      <li class="arrow"><a href="#subjectgroups">Subject Groups</a></li>
+      <li class="arrow"><a href="#faculty">The Faculty</a></li>
+      <li class="arrow"><a href="#research">Research</a></li>
+      
+    </ul>
+    <h2>External Links</h2>
+    <ul class="rounded" id="homeExternalLinks">
+      <!-- Links will be placed via JavaScript -->
+    </ul>
+  </div>
+  <!-- About -->
+  <div id="about">
+    <div class="toolbar">
+      <h1>About</h1>
+      <a class="button slideup" id="closeButton" href="#home">Close</a>
+    </div>
+    <div class="info">
+      <p>This application is part of the <em>Assignment I</em> of the lecture module HCI-MCI-M which is held by Prof. Tom Gross as chair of the <a href="http://www.uni-bamberg.de/hci" target="_blank">HCI Group</a> at the <a href="http://www.uni-bamberg.de/" target="_blank">University of Bamberg</a>.</p>
+      <p>The aim is to receive insights in the conceptualisation process of creating mobile applications.</p>
+    </div>
+  </div>
+  <!-- Space for your contents -->
+  <!-- Studies -->
+  <div id="studies">
+    <div class="toolbar">
+      <h1>Studies</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+      <li class="arrow"><a href="#undergraduate">Non-Exchange Students(Undergraduate)</a></li>
+      <li class="arrow"><a href="#masterdegree">Non-Exchange Students (Master's Degree)</a></li>
+      <li class="arrow"><a href="#phd">Non-Exchange Students (Ph.D. Programmes)</a></li>
+      <li class="arrow"><a href="#erasmus">Exchange Students (e.g. Erasmus)</a></li>
+       <li class="arrow"><a href="#faq">Frequently Asked Questions (FAQ)</a></li>
+    </ul>
+    <h2>External Links</h2>
+    <ul class="rounded"><li id="studiesExternalLinks"></li>
+      <!-- Links will be placed via JavaScript -->
+    </ul>
+  </div>
+  <!--Undergraduate  -->
+ <div id="undergraduate">
+    <div class="toolbar">
+      <h1>Undergraduate</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+
+    <!-- Application Prerequisites -->
+    <ul class="rounded">
+      <button class="collapsible"><li>Application Prerequisites</li></button>
+      <div class="content">
+        <ul class="rounded" id="apExternalLinks">
+      </div>
+    </ul> 
+
+    <!-- How Do I Apply? -->
+    <ul class="rounded">
+      <button class="collapsible"><li>How Do I Apply?</li></button>
+      <div class="content">
+        <div class="info">
+          <p>Applications and/or documentation which is sent via e-mail or fax will not be accepted. You must send your application by post to the following address:<br>
+          Mail address: Otto-Friedrich-Universität Bamberg, Akademisches Auslandsamt/International Office, 96045 Bamberg.</p>
+        </div>
+        <ul class="rounded" id="howtoapplyExternalLinks">
+      </div>
+    </ul> 
+
+    <!-- After the Application -->
+      <ul class="rounded">
+      <button class="collapsible"><li>After the Application</li></button>
+      <div class="content">
+        <div class="info">
+          <p>When your application has been received, your documents are checked by the International Office.</p>
+        </div>
+        <ul class="rounded" id="ataExternalLinks">
+      </div>
+    </ul> 
+  </div>
+  <!--Masterdegree  -->
+  <div id="masterdegree">
+    <div class="toolbar">
+      <h1>Master degree</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+        <ul class="rounded" id="mdExternalLinks">
+    </ul> 
+  </div>
+    <!--Ph.D. Programmes  -->
+  <div id="phd">
+    <div class="toolbar">
+      <h1>Ph.D Programmes</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <div style="color:#00457d; font-family: Open Sans,Arial,Helvetica, sans-serif; text-align: center;">
+      <h1 style="color:#00457d; font-size: 18px"><strong> Non-Exchange Students (Ph.D.)</strong></h1>
+      <p>Contact for Ph.D. programmes:Dr. Andreas Weihe</p>
+      <ul>
+        <li>Director of the International Office</li>
+        <li>ERASMUS and ECTS coordinator</li>
+        <li>Exchange programme organization</li>
+        <li>Scholarship management</li>
+      </ul>
+      <p>Kapuzinerstraße 25, room 02.08 <br>Tel.: +49 951 863-1048 or -1049 (main office/secretary)<br>Fax: +49 951 863-1054 <br>Email: andreas.weihe(at)uni-bamberg.de <br>Consultation by appointment</p>
+      <h2>External Links</h2>
+      <ul class="rounded"><li class="arrow"><a href="https://www.uni-bamberg.de/en/auslandsamt/welcome-center-for-internationally-mobile-scholars/doctoral-studies-at-the-university-of-bamberg/" target="_blank">Further information on doctoral studies</a></li></ul>
+    </div>
+  </div>
+  <!-- Exchange Students -->
+  <div id="erasmus">
+    <div class="toolbar">
+      <h1>Exchange Students</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+        <ul class="rounded" id="exExternalLinks">
+    </ul>
+  </div>
+  <!-- Frequently Asked Questions (FAQ) Studies -->
+  <div id="faq">
+    <div class="toolbar">
+      <h1>(FAQ)</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+      <button class="collapsible"><li>Which study programmes are offered?</li></button>
+      <div class="content">
+          <p>There are NO courses in engineering, medicine, natural sciences (biology, chemistry etc.) or sports!
+
+          <br>There are NO Bachelor’s degree programmes taught in English!
+
+          <br>Overview of the currently offered study programmes for NON-exchange students:
+
+          <ul>
+            <li>Bachelor programmes</li>
+            <li>Teacher Training programmes</li>
+            <li>Master programmes</li>
+            <li>International degree programmes</li>
+            <li>PhD programmes</li>
+          </ul>
+          </p>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>What is the language of instruction?</li></button>
+      <div class="content">
+          <p>Please note:
+          <ul>
+            <li>In almost all degree programmes, the language of instruction is German!</li>
+            <li>There are NO Bachelor’s degree programmes taught in English.</li>
+            <li>There are only VERY FEW Master’s degree programmes taught in English.</li>
+            <li>EXCHANGE students receive specific instructions during their application procedure.</li>
+          </ul>
+          </p>
+      </div>
+    </ul> 
+
+    <ul class="rounded">
+      <button class="collapsible"><li>What is a Non-Exchange Student?</li></button>
+      <div class="content">
+          <p>Non-exchange students are international students who
+          <ul>
+            <li>Do not take part in an exchange programme;</li>
+            <li>Apply for Bachelor’s, Teacher Training, Master’s or PhD programmes, or for the DSH semester course, the Studienkolleg or a short-term non-degree study programme.</li>
+          </ul>
+          </p>
+      </div>
+    </ul> 
+
+    <ul class="rounded">
+      <button class="collapsible"><li>How is a course schedule created?</li></button>
+      <div class="content">
+          <p><a href="https://www.uni-bamberg.de/en/studies/frequently-asked-questions-faq/creating-a-course-schedule/" target="_blank">Instructions</a> for creating a course schedule.
+          </p>
+      </div>
+    </ul> 
+  </div>
+  <!-- Research -->
+  <div id="research">
+    <div class="toolbar">
+      <h1>Research</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+  </div>
+  <!-- The Faculty -->
+  <div id="faculty">
+    <div class="toolbar">
+      <h1>The Faculty</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+      <li class="arrow"><a href="#">Humanities and Cultural Studies</a></li>
+      <li class="arrow"><a href="#">Social and Economic Sciences</a></li>
+      <li class="arrow"><a href="#">Human sciences</a></li>
+      <li class="arrow"><a href="#">Business Informatics u. Applied Computer Science</a></li>
+    </ul>
+  </div>
+  <!-- Subject Groups -->
+  <div id="subjectgroups">
+    <div class="toolbar">
+      <h1>Subject Groups</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <p style="background-color: #fff;
+    color: gray;
+    text-shadow: white 0 1px 0;
+    overflow: visible;
+    cursor: pointer;
+    padding: 2px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 20px;
+    font: normal 17px Helvetica Neue Ultra Light, Helvetica Neue Interface M3, Helvetica;">The academic subject groups arranged here reflect the faculty’s interdisciplinary character and its commitment to building a solid foundational knowledge of Computer Science.</p>
+    <ul class="rounded">
+      <li class="arrow"><a href="#acs">Applied Computer Science</a></li>
+      <li class="arrow"><a href="#cs">Computer Science</a></li>
+      <li class="arrow"><a href="#is">Information Systems</a></li>
+    </ul>
+  </div>
+  <!-- Applied Computer Science -->
+  <div id="acs">
+    <div class="toolbar">
+      <h1>Applied Computer Science</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+      <button class="collapsible"><li>Cognitive Systems</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Ute-Schmid_02ca8f5916.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/cogsys/schmid-ute/" target="_blank">Prof. Dr. Ute Schmid</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/cogsys/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/cogsys/teaching/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/cogsys/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Cultural Computing</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Christoph-Schlieder_b9778ff2ae.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/kinf/staff/prof-dr-christoph-schlieder/" target="_blank">Prof. Dr. Christoph Schlieder</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/kinf/staff/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/kinf/studiy/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/kinf/forschung/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Media Informatics</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-AndreasHenrich_f52ae43c6d.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/minf/team/henrich/" target="_blank">Prof. Dr. Andreas Henrich</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/minf/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/minf/studium/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/minf/forschung/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Human-Computer Interaction</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Tom-Gross_271b3522e7.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/hci/team/tom-gross/" target="_blank">Prof. Dr. Tom Gross</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/hci/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/hci/studies/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/hci/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Prof. Dr. Diedrich Wolter</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Diedrich-Wolter_2defe5e828.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ai/smart-environments/team/diedrich-wolter/" target="_blank">Prof. Dr. Diedrich Wolter</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ai/smart-environments/team/diedrich-wolter/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ai/smart-environments/teaching/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ai/smart-environments/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+  </div>
+  <!-- Computer Science -->
+  <div id="cs">
+    <div class="toolbar">
+      <h1>Computer Science</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+      <button class="collapsible"><li>Distributed Systems Group</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Guido-Wirtz_ed8fc90ce1.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/pi/team/wirtz/" target="_blank">Prof. Dr. Guido Wirtz</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/pi/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/pi/studium/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/pi/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Informatics Theory Group</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Michael-Mendler_138435f1ab.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/gdi/team/michael-mendler/" target="_blank">Prof. Michael Mendler, PhD</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/gdi/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/gdi/leistungen-alt/teaching/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/gdi/leistungen-alt/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Communication Services, Telecomm. Systems and Computer Networks</li></button>
+      <div class="content">
+          <img src="img\csm_krieger_8cedc98bc7.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/ktr/mitarbeiter/krieger/" target="_blank">Prof. Dr. Udo Krieger</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ktr/mitarbeiter/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ktr/teaching/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/ktr/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Mobile devices / mobility</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Daniela-Nicklas_5611cd6ffe.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/mobi/team/prof-dr-daniela-nicklas/" target="_blank">Prof. Dr. Daniela Nicklas</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/mobi/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/mobi/studies/studies/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/mobi/studies/research/"target="_blank">Research</a></li>
+        </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Software Technologies Research Group</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Gerald-Luettgen_c6ea6ec32e.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/swt/team/prof-dr-gerald-luettgen/" target="_blank">Prof. Dr. Gerald Lüttgen</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/swt/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/swt/studies/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/swt/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Privacy and Security in Information Systems Group</li></button>
+      <div class="content">
+          <img src="img\csm_herrmann_1_9c8a756562.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/informatik/psi/team/dominik-herrmann/" target="_blank">Prof. Dr. Dominik Herrmann</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/informatik/psi/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/informatik/psi/teaching/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/informatik/psi/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+  </div>
+
+  <!-- Computer Science -->
+  <div id="is">
+    <div class="toolbar">
+      <h1>Information Systems</h1>
+      <a class="back" href="#home">Back</a>
+    </div>
+    <!-- Please place contents here using HTML & JavaScript -->
+    <ul class="rounded">
+      <button class="collapsible"><li>Energy Efficient Systems</li></button>
+      <div class="content">
+          <img src="img\csm_Prof-Thorsten-Staake_67b390130c.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/eesys/team/" target="_blank">Prof. Dr. Thorsten Staake</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/eesys/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/eesys/teaching/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/eesys/research/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Industrial Information Systems</li></button>
+      <div class="content">
+          <img src="img\csm_overhage-sm_a1df0b176e.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/iis/mitarbeiter/overhage/" target="_blank">Prof. Dr. Sven Overhage</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/iis/mitarbeiter/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/iis/studium/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/iis/forschung/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Information Systems and Services</li></button>
+      <div class="content">
+          <img src="img\csm_weitzel_87a3ab88d2.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/isdl/team/weitzel-prof-dr-tim/" target="_blank">Prof. Dr. Tim Weitzel</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/isdl/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/isdl/studium/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/isdl/forschung/"target="_blank">Research</a></li>
+          </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>Social Networks</li></button>
+      <div class="content">
+          <img src="img\csm_fischbach_4a09db3451.jpg">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/sna/team/prof-dr-kai-fischbach//" target="_blank">Prof. Dr. Kai Fischbach</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/sna/team/"target="_blank">Staff</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/sna/research/"target="_blank">Teaching and Studying</a></li>
+        <li class="arrow"><a href="https://www.uni-bamberg.de/en/mobi/studies/research/"target="_blank">Research</a></li>
+        </ul>
+      </div>
+    </ul> 
+    <ul class="rounded">
+      <button class="collapsible"><li>System Development and Database Applications (until WS 2016/17)</li></button>
+      <div class="content">
+          <ul class="rounded">
+        <li class="arrow"><a href="https://www.uni-bamberg.de/ism/team/" target="_blank">Emeritus Prof. Dr. Elmar Sinz</a></li>
+          </ul>
+      </div>
+    </ul> 
+  </div>
+  <script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</body>
+</html>
